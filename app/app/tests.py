@@ -2,7 +2,6 @@
 from django.test import SimpleTestCase
 from app import calc
 
-
 class CalcTests(SimpleTestCase):
     # Test the calc module
 
@@ -15,3 +14,6 @@ class CalcTests(SimpleTestCase):
         # Test subtracting numbers
         res = calc.subtract(10, 15)
         self.assertEqual(res, 5)
+
+    def gram(self):
+        pass
