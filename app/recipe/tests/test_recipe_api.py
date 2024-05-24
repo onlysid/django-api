@@ -14,9 +14,11 @@ from recipe.serializers import (
 
 RECIPES_URL = reverse('recipe:recipe-list')
 
+
 def detail_url(recipe_id):
     # Create and return a recipe detail URL
     return reverse('recipe:recipe-detail', args=[recipe_id])
+
 
 # Helper function for creating and returning a sample recipe
 def create_recipe(user, **params):
@@ -36,6 +38,7 @@ def create_recipe(user, **params):
 def create_user(**params):
     # Create and return a new user
     return get_user_model().objects.create_user(**params)
+
 
 class PublicRecipeAPITests(TestCase):
     # Test unauthenticated API requests
@@ -59,7 +62,6 @@ class PrivateRecipeAPITests(TestCase):
             password='testpass123',
         )
         self.client.force_authenticate(self.user)
-
 
     def test_retrieve_recipes(self):
         create_recipe(user=self.user)
@@ -112,7 +114,8 @@ class PrivateRecipeAPITests(TestCase):
         # Get the recipe with the ID returned by the payload
         recipe = Recipe.objects.get(id=res.data['id'])
 
-        # Loop through the attributes of the recipe and make sure every item is equal to the payload
+        # Loop through the attributes of the recipe
+        # and make sure every item is equal to the payload
         for k, v in payload.items():
             self.assertEqual(getattr(recipe, k), v)
         self.assertEqual(recipe.user, self.user)
@@ -212,7 +215,8 @@ class PrivateRecipeAPITests(TestCase):
 
         self.assertEqual(recipe.tags.count(), 2)
         for tag in payload['tags']:
-            exists = recipe.tags.filter(name=tag['name'], user=self.user,).exists()
+            exists = recipe.tags.filter(name=tag['name'],
+                                        user=self.user,).exists()
             self.assertTrue(exists)
 
     def test_create_recipe_with_existing_tags(self):
@@ -239,7 +243,6 @@ class PrivateRecipeAPITests(TestCase):
             )
             self.assertTrue(exists)
 
-
     def test_create_tag_on_update(self):
         recipe = create_recipe(user=self.user)
         payload = {'tags': [{'name': 'Lunch'}]}
@@ -248,7 +251,8 @@ class PrivateRecipeAPITests(TestCase):
         res = self.client.patch(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         new_tag = Tag.objects.get(user=self.user, name='Lunch')
-        # No need to do refresh_db as recipe.tags.all() will refresh automatically as it's a many to many field
+        # No need to do refresh_db as recipe.tags.all() will
+        # refresh automatically as it's a many to many field
         self.assertIn(new_tag, recipe.tags.all())
 
     def test_update_recipe_assign_tag(self):
